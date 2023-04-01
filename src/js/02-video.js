@@ -6,12 +6,16 @@ const player = new VimeoPlayer(iframeEl);
 const savedTime = {
   second: 0,
 };
-player.on('timeupdate', function ({ duration, percent, seconds }) {
-  savedTime.second = seconds;
-  localStorage.setItem('videoplayer-current-time', savedTime.second);
-});
+
+function playerOnFn() {
+  player.on('timeupdate', function ({ seconds }) {
+    console.log(seconds);
+    savedTime.second = seconds;
+    localStorage.setItem('videoplayer-current-time', savedTime.second);
+  });
+}
+
 const newTime = localStorage.getItem('videoplayer-current-time');
-console.log(newTime);
 player
   .setCurrentTime(newTime)
   .then(function (newTime) {
@@ -25,7 +29,7 @@ player
         break;
 
       default:
-        console.log('Some other error occured');
+        console.log(`Some other error occured, maybe 'newTime' is ${newTime}?`);
         // some other error occurred
         break;
     }
