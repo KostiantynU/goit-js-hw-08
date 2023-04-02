@@ -1,24 +1,39 @@
 import VimeoPlayer from '@vimeo/player';
 const throttle = require('lodash.throttle');
-console.log(throttle);
-const iframeEl = document.querySelector('iframe');
+const iframeEl = document.querySelector('#vimeo-player');
 const player = new VimeoPlayer(iframeEl);
 const savedTime = {
-  second: 0,
+  mySeconds: 0,
+};
+const saveData = (key, value) => {
+  try {
+    const data = JSON.stringify(value);
+    localStorage.setItem(key, data);
+  } catch (err) {
+    console.error('Stringify error:', err.message, err.type);
+  }
+};
+const readData = key => {
+  try {
+    const data = localStorage.getItem(key);
+    return data === null ? undefined : JSON.parse(data);
+  } catch (err) {
+    console.error('Parse error:', err.message, err.type);
+  }
 };
 
-function playerOnFn() {
-  player.on('timeupdate', function ({ seconds }) {
-    console.log(seconds);
-    savedTime.second = seconds;
-    localStorage.setItem('videoplayer-current-time', savedTime.second);
-  });
-}
+player.on(
+  'timeupdate',
+  throttle(function ({ seconds }) {
+    savedTime.mySeconds = seconds;
+    saveData('videoplayer-current-time', savedTime.mySeconds);
+  }, 1000)
+);
 
-const newTime = localStorage.getItem('videoplayer-current-time');
+const newTime = readData('videoplayer-current-time');
 player
   .setCurrentTime(newTime)
-  .then(function (newTime) {
+  .then(function (seconds) {
     // seconds = the actual time that the player seeked to
   })
   .catch(function (error) {
