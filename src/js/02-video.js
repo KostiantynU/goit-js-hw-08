@@ -30,4 +30,4 @@ player.on(
   }, 1000)
 );
 
-player.setCurrentTime(() => readData('videoplayer-current-time'));
+player.setCurrentTime(readData('videoplayer-current-time'));
